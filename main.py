@@ -1,13 +1,7 @@
-"""CLI entry point
-
-Usage::
-
-    python main.py
-"""
-
 from loguru import logger
 
 from src.ingestion.ingestor import LogIngestor
+from src.traffic.characterizer import TrafficCharacterizer
 
 
 def main() -> None:
@@ -20,6 +14,13 @@ def main() -> None:
         f"Done: {s.parsed_count} parsed, "
         f"{s.malformed_count} malformed "
         f"(rate={s.malformed_rate}).",
+    )
+
+    char = TrafficCharacterizer()
+    result = char.run()
+    logger.success(
+        f"Characterization complete: arrival={result.arrival.is_poisson}, "
+        f"best service dist={result.service.best_distribution}"
     )
 
 
