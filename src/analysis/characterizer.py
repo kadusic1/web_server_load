@@ -107,9 +107,9 @@ class TrafficCharacterizer:
 
     def _save_empirical(self) -> None:
         """Persist empirical traces as NumPy ``.npy`` arrays."""
-        assert self.df is not None
-        saver = EmpiricalSaver(self.df)
-        saver.save()
+        assert self._interarrivals is not None
+        assert self._sizes is not None
+        EmpiricalSaver(self._interarrivals, self._sizes).save()
 
     def _write_json(self) -> None:
         """Assemble and persist the characterization JSON."""

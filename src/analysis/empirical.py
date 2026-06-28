@@ -10,7 +10,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from loguru import logger
 
 
@@ -21,13 +20,21 @@ class EmpiricalSaver:
     theoretical distribution path is not selected.
     """
 
-    def __init__(self, df: pd.DataFrame) -> None:
-        """Initialize the saver with the full parsed DataFrame.
+    def __init__(
+        self,
+        interarrivals: np.ndarray,
+        sizes: np.ndarray,
+    ) -> None:
+        """Initialize the saver with pre-computed empirical traces.
 
         Args:
-            df: DataFrame with ``timestamp`` and ``bytes`` columns.
+            interarrivals: Inter-arrival times (seconds) derived from the
+                parsed timestamp column.
+            sizes: HTTP response sizes (bytes) derived from the parsed
+                bytes column.
         """
-        self.df = df
+        self.interarrivals = interarrivals
+        self.sizes = sizes
 
     def save(
         self,
@@ -43,17 +50,10 @@ class EmpiricalSaver:
         out = Path(dst)
         out.mkdir(parents=True, exist_ok=True)
 
-        times = self.df["timestamp"].sort_values()
-        diffs = times.diff().dt.total_seconds().to_numpy()
-        diffs = diffs[1:]  # first is NaN
-        interarrivals = diffs[diffs > 0]
-
-        sizes = self.df["bytes"].dropna().to_numpy()
-        sizes = sizes[sizes > 0]
-
-        np.save(out / f"{prefix}_interarrivals.npy", interarrivals)
-        np.save(out / f"{prefix}_service_sizes.npy", sizes)
+        np.save(out / f"{prefix}_interarrivals.npy", self.interarrivals)
+        np.save(out / f"{prefix}_service_sizes.npy", self.sizes)
 
         logger.info(
-            f"Saved {len(interarrivals)} inter-arrival gaps, {len(sizes)} service sizes"
+            f"Saved {len(self.interarrivals)} inter-arrival gaps, "
+            f"{len(self.sizes)} service sizes"
         )
