@@ -68,8 +68,17 @@ def plot_interarrivals(
     ax1.legend()
     ax1.set_xlim(0, np.percentile(interarrivals, 99.5))
 
+    # Subsample for Q-Q plot — vector formats (SVG/PDF) embed every
+    # point as an individual element, making files enormous with
+    # large datasets.
+    rng = np.random.default_rng(42)
+    qq_sample = (
+        rng.choice(interarrivals, size=10000, replace=False)
+        if len(interarrivals) > 10000
+        else interarrivals
+    )
     sp_stats.probplot(
-        interarrivals,
+        qq_sample,
         dist=sp_stats.expon(loc=0, scale=1 / lambda_),
         plot=ax2,
     )
