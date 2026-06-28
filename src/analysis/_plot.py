@@ -38,7 +38,7 @@ def plot_rate(
         title=f"Arrival Rate λ(t), {bin_seconds}s bins",
     )
     fig.tight_layout()
-    fig.savefig(Path(dst) / "rate_series.png", dpi=150)
+    fig.savefig(Path(dst) / "rate_series.svg")
     plt.close(fig)
 
 
@@ -77,7 +77,7 @@ def plot_interarrivals(
     ax2.set_ylim(0, np.percentile(interarrivals, 99.5))
 
     fig.tight_layout()
-    fig.savefig(Path(dst) / "interarrival_histogram.png", dpi=150)
+    fig.savefig(Path(dst) / "interarrival_histogram.svg")
     plt.close(fig)
 
 
@@ -121,7 +121,7 @@ def plot_service(
     )
     ax.legend()
     fig.tight_layout()
-    fig.savefig(Path("data") / "service_time_fit.png", dpi=150)
+    fig.savefig(Path("data") / "service_time_fit.svg")
     plt.close(fig)
 
 
