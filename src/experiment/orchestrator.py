@@ -8,16 +8,20 @@ from __future__ import annotations
 
 import itertools
 import json
+import time
 from dataclasses import asdict
+
 import numpy as np
 from loguru import logger
 from scipy import stats as sp_stats
 
+from src.experiment._analysis import compute_overload_analysis
 from src.experiment._config import (
     ExperimentConfig,
     ExperimentResult,
     LoadLevelRow,
 )
+from src.experiment._plot import plot_response_time_vs_load
 from src.experiment._replication import run_replications
 from src.simulation._types import SimulationResult
 
@@ -61,6 +65,7 @@ class ExperimentOrchestrator:
         )
 
         rows: list[LoadLevelRow] = []
+        t_start = time.perf_counter()
         for i, rho in enumerate(rho_points):
             logger.info(
                 f"Sweep rho={rho:.3f} ({i + 1}/{cfg.n_rho_points})",
@@ -88,6 +93,14 @@ class ExperimentOrchestrator:
 
         result = ExperimentResult(rows=rows)
         self._write(result)
+        plot_response_time_vs_load(result)
+        compute_overload_analysis(result, mu)
+
+        elapsed = time.perf_counter() - t_start
+        logger.success(
+            f"Sweep completed in {elapsed:.1f}s "
+            f"({cfg.n_rho_points} levels x {cfg.n_replications} reps)",
+        )
         return result
 
     @staticmethod
