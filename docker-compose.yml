@@ -1,0 +1,12 @@
+services:
+  sim:
+    build: .
+    image: web-server-sim
+    entrypoint: ["python", "main.py"]
+    volumes:
+      - ./data:/app/data
+      - kaggle_cache:/root/.cache/kagglehub
+    command: ["--help"]
+
+volumes:
+  kaggle_cache:
