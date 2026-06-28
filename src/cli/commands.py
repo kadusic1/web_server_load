@@ -127,7 +127,14 @@ def cmd_sweep() -> None:
 
 
 def cmd_all() -> None:
-    """Run the full pipeline: ingest, analyse, then simulate."""
+    """Run the pipeline: ingest, analyse, then simulate."""
     cmd_ingest()
     cmd_analyze()
     cmd_simulate()
+
+
+def cmd_all_sweep() -> None:
+    """Run the pipeline: ingest, analyse, then sweep."""
+    cmd_ingest()
+    cmd_analyze()
+    cmd_sweep()

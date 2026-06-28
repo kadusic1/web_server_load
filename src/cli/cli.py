@@ -16,8 +16,9 @@ def build_parser() -> argparse.ArgumentParser:
     """Construct the argument parser with subcommands.
 
     Returns:
-        An :class:`argparse.ArgumentParser` configured with four
-        subcommands: ``ingest``, ``analyze``, ``simulate``, ``all``.
+        An :class:`argparse.ArgumentParser` configured with
+        subcommands: ``ingest``, ``analyze``, ``simulate``,
+        ``sweep``, ``all``, ``all_sweep``.
     """
     parser = argparse.ArgumentParser(
         description="Web server traffic simulation pipeline",
@@ -29,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("simulate", help="Run single-shot simulation")
     sub.add_parser("sweep", help="Run load-sweep experiment with replications")
     sub.add_parser("all", help="Run full pipeline: ingest + analyze + simulate")
+    sub.add_parser("all_sweep", help="Run full pipeline: ingest + analyze + sweep")
 
     return parser
 
@@ -51,3 +53,5 @@ def main() -> None:
             commands.cmd_sweep()
         case "all":
             commands.cmd_all()
+        case "all_sweep":
+            commands.cmd_all_sweep()
