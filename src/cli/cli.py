@@ -27,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("ingest", help="Parse raw logs into parquet")
     sub.add_parser("analyze", help="Analyze traffic patterns")
     sub.add_parser("simulate", help="Run single-shot simulation")
+    sub.add_parser("sweep", help="Run load-sweep experiment with replications")
     sub.add_parser("all", help="Run full pipeline: ingest + analyze + simulate")
 
     return parser
@@ -46,5 +47,7 @@ def main() -> None:
             commands.cmd_analyze()
         case "simulate":
             commands.cmd_simulate()
+        case "sweep":
+            commands.cmd_sweep()
         case "all":
             commands.cmd_all()

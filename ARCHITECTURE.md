@@ -49,7 +49,7 @@ Runs via the `TrafficCharacterizer` class.
 Runs via the `SimulationEngine` class.
 
 1. **Load config** — instantiate `SimulationConfig` with defaults:
-   `servers=1`, `sim_time=1_000_000s`, `warmup=5_000s`, `seed=42`,
+   `servers=1`, `sim_time=10_000s`, `warmup=500s`, `seed=42`,
    `monitor_interval=0.1s`, `bandwidth=500_000 B/s`, and paths to
    `data/empirical_interarrivals.npy` and
    `data/empirical_service_sizes.npy`.
@@ -92,3 +92,39 @@ Runs via the `SimulationEngine` class.
    Returns a `SimulationResult` dataclass.
 
 6. **Output** — the result is logged via `loguru`
+
+# Experiment Orchestration phase
+
+Runs via the `ExperimentOrchestrator` class.
+
+1. **Load config** — instantiate `ExperimentConfig`, which nests a
+   `SimulationConfig` for per-run parameters.
+
+2. **Load empirical traces** — `np.load()` inter-arrival times and
+   service byte sizes from the analysis phase.
+   - Computes `mu = bandwidth / mean(service_sizes)` — service rate
+     (requests/sec).
+   - Computes `lambda_0 = 1 / mean(interarrivals)` — base arrival rate.
+
+3. **Generate rho points** — 15 non-uniformly spaced utilisation
+   points from 0.1 to 1.5, concentrated around the 0.7–1.3 knee zone.
+
+ 4. **For each rho level** (sequential, one at a time):
+    - Scales inter-arrival trace:
+      `interarrivals * lambda_0 / (rho * servers * mu)` to shift the
+      arrival rate while preserving the trace's burstiness.
+    - **Runs 30 replications** sequentially, each with an incremented
+      seed (`sim_config.seed + i`) for deterministic variability.
+      Each replication creates its own `SimulationEngine`.
+   - **Aggregates results:**
+     * Mean wait time across replications.
+     * 95% t-confidence interval (df = 29) on the mean.
+     * p50 / p95 / p99 from pooled per-request wait times.
+     * Measured rho (mean server utilisation across replications).
+   - Discards raw per-request waits after aggregation — only the
+     summary row persists.
+
+5. **Output** — writes `data/experiment_results.json` with config
+   metadata and one `LoadLevelRow` per rho level. Each row contains:
+   `rho`, `rho_actual`, `mean_wait`, `ci_lower`, `ci_upper`,
+   `p50_wait`, `p95_wait`, `p99_wait`, `n_replications`.

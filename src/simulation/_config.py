@@ -13,8 +13,8 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class SimulationConfig:
     servers: int = 1
-    sim_time: float = 1_000_000.0
-    warmup: float = 5_000.0
+    sim_time: float = 10_000.0
+    warmup: float = 500.0
     seed: int = 42
     monitor_interval: float = 0.1
     bandwidth: float = 500_000

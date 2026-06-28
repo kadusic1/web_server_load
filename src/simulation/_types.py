@@ -32,3 +32,4 @@ class SimulationResult:
     avg_queue_length: float
     server_utilization: float
     total_requests: int
+    waits: tuple[float, ...] = ()

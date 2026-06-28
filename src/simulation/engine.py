@@ -121,6 +121,7 @@ class _StatsCollector:
             avg_queue_length=avg_queue,
             server_utilization=min(utilization, 1.0),
             total_requests=self._total_requests,
+            waits=tuple(self._waits),
         )
 
 

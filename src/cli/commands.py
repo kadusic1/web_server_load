@@ -20,6 +20,20 @@ from src.simulation import (
     SimulationEngine,
 )
 from src.analysis import TrafficCharacterizer
+from src.experiment import ExperimentOrchestrator
+
+
+def _require_empirical_traces() -> None:
+    """Check that empirical trace files from analysis exist."""
+    cfg = SimulationConfig()
+    if (
+        not Path(cfg.interarrivals_path).exists()
+        or not Path(cfg.service_sizes_path).exists()
+    ):
+        raise RuntimeError(
+            "empirical trace files not found in data/ "
+            "- run `python main.py analyze` first"
+        )
 
 
 def cmd_ingest() -> None:
@@ -80,15 +94,8 @@ def cmd_simulate() -> None:
             (analysis has not been run yet).
     """
     logger.info("Starting simulation phase")
+    _require_empirical_traces()
     cfg = SimulationConfig()
-    if (
-        not Path(cfg.interarrivals_path).exists()
-        or not Path(cfg.service_sizes_path).exists()
-    ):
-        raise RuntimeError(
-            "empirical trace files not found in data/ "
-            "- run `python main.py analyze` first"
-        )
     interarrivals = np.load(cfg.interarrivals_path)
     service_sizes = np.load(cfg.service_sizes_path)
     service_times = service_sizes / cfg.bandwidth
@@ -103,6 +110,20 @@ def cmd_simulate() -> None:
         f"util={result.server_utilization:.3f}, "
         f"requests={result.total_requests}"
     )
+
+
+def cmd_sweep() -> None:
+    """Run the load-sweep experiment with replications.
+
+    Raises:
+        RuntimeError: If empirical trace files are missing
+            (analysis has not been run yet).
+    """
+    logger.info("Starting sweep phase")
+    _require_empirical_traces()
+
+    orch = ExperimentOrchestrator()
+    orch.run()
 
 
 def cmd_all() -> None:
