@@ -1,3 +1,5 @@
+> [Bosanski](ARHITEKTURA.md) | **English**
+
 # Ingestion phase
 
 Outputs a `data/parsed.parquet` file containing 1,568,252 records e.g.:
