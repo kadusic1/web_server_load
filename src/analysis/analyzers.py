@@ -15,7 +15,7 @@ from scipy import stats as sp_stats
 from scipy.stats._continuous_distns import rv_continuous
 from loguru import logger
 
-from src.traffic._types import ArrivalVerdict, ServiceFit, ServiceVerdict
+from src.analysis._types import ArrivalVerdict, ServiceFit, ServiceVerdict
 
 _RNG = np.random.default_rng(42)
 

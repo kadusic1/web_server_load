@@ -5,15 +5,15 @@ any simulation code exists.  Produces the output contract for
 Issue 3 (Simulation Engine).
 """
 
-from src.traffic._types import (
+from src.analysis._types import (
     ArrivalVerdict,
     ServiceFit,
     ServiceVerdict,
     TrafficCharacterization,
 )
-from src.traffic.analyzers import RateBinner, ArrivalTester, ServiceFitter
-from src.traffic.empirical import EmpiricalSaver
-from src.traffic.characterizer import TrafficCharacterizer
+from src.analysis.analyzers import RateBinner, ArrivalTester, ServiceFitter
+from src.analysis.empirical import EmpiricalSaver
+from src.analysis.characterizer import TrafficCharacterizer
 
 __all__ = [
     "ArrivalVerdict",

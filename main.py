@@ -1,7 +1,7 @@
 from loguru import logger
 
-from src.ingestion.ingestor import LogIngestor
-from src.traffic.characterizer import TrafficCharacterizer
+from src.ingestion import LogIngestor
+from src.analysis import TrafficCharacterizer
 
 
 def main() -> None:

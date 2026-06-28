@@ -14,10 +14,10 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-from src.traffic._types import TrafficCharacterization
-from src.traffic.analyzers import RateBinner, ArrivalTester, ServiceFitter
-from src.traffic._plot import plot_rate, plot_interarrivals, plot_service
-from src.traffic.empirical import EmpiricalSaver
+from src.analysis._types import TrafficCharacterization
+from src.analysis.analyzers import RateBinner, ArrivalTester, ServiceFitter
+from src.analysis._plot import plot_rate, plot_interarrivals, plot_service
+from src.analysis.empirical import EmpiricalSaver
 
 matplotlib.use("Agg")
 

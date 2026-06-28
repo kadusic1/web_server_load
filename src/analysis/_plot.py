@@ -14,8 +14,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats as sp_stats
 
-from src.traffic._types import ServiceFit
-from src.traffic.analyzers import _param_names
+from src.analysis._types import ServiceFit
+from src.analysis.analyzers import _param_names
 
 
 def plot_rate(
