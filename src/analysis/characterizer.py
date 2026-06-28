@@ -92,11 +92,9 @@ class TrafficCharacterizer:
         self._arrival_verdict = tester.test()
         self._interarrivals = tester.interarrivals
         self._lambda = tester.lambda_
-        ia = tester.interarrivals
-        lam = tester.lambda_
-        assert ia is not None
-        assert lam is not None
-        plot_interarrivals(ia, lam)
+        assert self._interarrivals is not None
+        assert self._lambda is not None
+        plot_interarrivals(self._interarrivals, self._lambda)
 
     def _fit_service(self) -> None:
         """Fit heavy-tailed distributions to response sizes."""
@@ -104,9 +102,8 @@ class TrafficCharacterizer:
         fitter = ServiceFitter(self.df)
         self._service_verdict = fitter.fit()
         self._sizes = fitter.sizes
-        sz = fitter.sizes
-        assert sz is not None
-        plot_service(sz, fitter.fits)
+        assert self._sizes is not None
+        plot_service(self._sizes, fitter.fits)
 
     def _save_empirical(self) -> None:
         """Persist empirical traces as NumPy ``.npy`` arrays."""
