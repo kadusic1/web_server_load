@@ -36,15 +36,15 @@ class ServiceFit:
         distribution: Name of the distribution (e.g. 'pareto').
         params: Fitted parameters dict.
         aic: Akaike Information Criterion (lower = better).
-        bic: Bayesian Information Criterion.
         ks_statistic: KS D statistic (absolute fit measure).
+        ks_pvalue: Parametric bootstrap KS p-value.
     """
 
     distribution: str
     params: dict
     aic: float
-    bic: float
     ks_statistic: float
+    ks_pvalue: float
 
 
 @dataclass

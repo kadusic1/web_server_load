@@ -108,9 +108,9 @@ class ArrivalTester:
 class ServiceFitter:
     """Fit heavy-tailed distributions to HTTP response sizes.
 
-    Evaluates Pareto (Type I) and Lognormal, recording AIC, BIC,
-    and KS statistic for each candidate.  The best distribution
-    minimises AIC.
+    Evaluates Pareto (Type I) and Lognormal, recording AIC, KS
+    statistic, and a parametric-bootstrap KS p-value for each
+    candidate.  The best distribution minimises AIC.
     """
 
     _CANDIDATES: list[tuple[str, rv_continuous, int]] = [
@@ -118,13 +118,20 @@ class ServiceFitter:
         ("lognorm", sp_stats.lognorm, 2),
     ]
 
-    def __init__(self, df: pd.DataFrame) -> None:
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        mc_samples: int = 999,
+    ) -> None:
         """Initialize the service-time fitter with response data.
 
         Args:
             df: DataFrame with a ``bytes`` column.
+            mc_samples: Monte Carlo samples for the parametric
+                bootstrap GoF test (default 999).
         """
         self.df = df
+        self.mc_samples = mc_samples
         self.sizes: np.ndarray | None = None
 
     def fit(self) -> ServiceVerdict:
@@ -141,23 +148,36 @@ class ServiceFitter:
             params = cast(rv_continuous, dist).fit(sizes, floc=0)
             loglik = float(np.sum(dist.logpdf(sizes, *params)))
             aic = float(2 * k - 2 * loglik)
-            bic = float(k * np.log(n) - 2 * loglik)
 
             ks_stat = float(
                 sp_stats.kstest(
                     sizes, lambda x, d=dist, p=params: d.cdf(x, *p)
                 ).statistic
             )
+
+            rng = np.random.default_rng(42)
+            gof_sample = rng.choice(sizes, size=10000, replace=False)
+            gof = sp_stats.goodness_of_fit(
+                dist,
+                gof_sample,
+                known_params={"loc": 0},
+                statistic="ks",
+                n_mc_samples=self.mc_samples,
+                rng=_RNG,
+            )
+
             self.fits.append(
                 ServiceFit(
                     distribution=name,
                     params={k: float(v) for k, v in zip(_param_names(dist), params)},
                     aic=round(aic, 1),
-                    bic=round(bic, 1),
                     ks_statistic=round(ks_stat, 5),
+                    ks_pvalue=float(gof.pvalue),
                 )
             )
-            logger.info(f"  {name}: AIC={aic:.0f}, KS={ks_stat:.4f}")
+            logger.info(
+                f"  {name}: AIC={aic:.0f}, KS={ks_stat:.4f}, p={float(gof.pvalue):.4f}"
+            )
 
         best = min(self.fits, key=lambda f: f.aic)
         logger.info(f"Best: {best.distribution} (AIC={best.aic})")
