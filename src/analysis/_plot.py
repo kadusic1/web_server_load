@@ -66,6 +66,7 @@ def plot_interarrivals(
     )
     ax1.set(xlabel="Inter-arrival time (s)", ylabel="Density")
     ax1.legend()
+    ax1.set_xlim(0, np.percentile(interarrivals, 99.5))
 
     sp_stats.probplot(
         interarrivals,
@@ -73,6 +74,7 @@ def plot_interarrivals(
         plot=ax2,
     )
     ax2.set_title("Q-Q Plot vs Exponential")
+    ax2.set_ylim(0, np.percentile(interarrivals, 99.5))
 
     fig.tight_layout()
     fig.savefig(Path(dst) / "interarrival_histogram.png", dpi=150)
@@ -82,14 +84,12 @@ def plot_interarrivals(
 def plot_service(
     sizes: np.ndarray,
     fits: list[ServiceFit],
-    dst: str = "data",
 ) -> None:
     """Plot log-binned histogram with fitted distribution overlays.
 
     Args:
         sizes: Observed response sizes (bytes).
         fits: Fitted distribution results.
-        dst: Output directory (default ``"data"``).
     """
     fig, ax = plt.subplots(figsize=(10, 4))
     ax.hist(
@@ -121,7 +121,7 @@ def plot_service(
     )
     ax.legend()
     fig.tight_layout()
-    fig.savefig(Path(dst) / "service_time_fit.png", dpi=150)
+    fig.savefig(Path("data") / "service_time_fit.png", dpi=150)
     plt.close(fig)
 
 
